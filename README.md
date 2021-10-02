@@ -1,1 +1,6 @@
-# score_generator
+# ScoreGenerator
+## installation
+```
+bundle install
+ruby main.rb
+```
