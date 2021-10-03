@@ -14,6 +14,12 @@ class ScorePdfGenerator < Prawn::Document
   # staff
   STAFF_LINE_HEIGHT = 1
   STAFF_SPACE_HEIGHT = 4
+  CLEF_WIDTH = 10
+  NUMBER_TEXT_WIDTH = 5
+  KEY_SIGNATURE_RIGHT_MARGIN = 5
+  METER_RIGHT_MARGINN = 5
+  NOTE_WIDTH = 5
+
 
   # music-config
   NUMBER_OF_STAFFS = 1
@@ -64,8 +70,12 @@ class ScorePdfGenerator < Prawn::Document
         stroke_line [0, @cursor_position + line * STAFF_SPACE_HEIGHT], [PAPER_CONTENTS_WIDTH, @cursor_position + line * STAFF_SPACE_HEIGHT] 
         staff_height += STAFF_SPACE_HEIGHT
       end
+
       set_clef('g')
-      set_notehead(20)
+      key_signature_width = set_key_signature('c-major')
+      meter_width = set_meter([1, 8], CLEF_WIDTH + key_signature_width + KEY_SIGNATURE_RIGHT_MARGIN)
+      @note_area_width = PAPER_CONTENTS_WIDTH - CLEF_WIDTH - key_signature_width - meter_width - KEY_SIGNATURE_RIGHT_MARGIN - METER_RIGHT_MARGINN
+      set_notehead(PAPER_CONTENTS_WIDTH - @note_area_width + NOTE_WIDTH)
       @cursor_position = staff_height
     end
 
@@ -93,6 +103,17 @@ class ScorePdfGenerator < Prawn::Document
       elsif clef_type == 'f'
         draw_text '?', size: 16, at: [0, @cursor_position]
       end
+    end
+
+    def set_key_signature(key_type)
+      0
+    end
+
+    def set_meter(meter, x)
+      font 'assets/fonts/notes.ttf'
+      draw_text meter[0], size: 16, at: [x, @cursor_position + STAFF_SPACE_HEIGHT * 3]
+      draw_text meter[1], size: 16, at: [x, @cursor_position + STAFF_SPACE_HEIGHT]
+      meter.max.to_s.length * NUMBER_TEXT_WIDTH
     end
 end
 
